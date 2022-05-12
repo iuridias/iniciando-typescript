@@ -26,13 +26,6 @@ export class NegociacaoController {
     verificaDiaUtil(data) {
         return data.getDay() > DiasDaSemana.DOMINGO && data.getDay() < DiasDaSemana.SABADO;
     }
-    // private criaNegociacao(): Negociacao {
-    //   const regex = /-/g;
-    //   const date = new Date(this.inputData.value.replace(regex, ','));
-    //   const quantidade = parseInt(this.inputQuantidade.value);
-    //   const valor = parseFloat(this.inputValor.value);
-    //   return new Negociacao(date, quantidade, valor);
-    // }
     limparFormulario() {
         this.inputData.value = "";
         this.inputQuantidade.value = "";
