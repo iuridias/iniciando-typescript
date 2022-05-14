@@ -5,19 +5,22 @@ import { NegociacoesView } from "../views/NegociacoesView.js";
 import { DiasDaSemana } from "../enums/DiasDaSemana.js";
 import { logarTempoExecucao } from "../decorators/logarTempoExecucao.js";
 import { inspecionar } from "../decorators/inspecionar.js";
+import { domInjector } from "../decorators/domInjector.js";
+import { NegociacoesService } from "../services/NegociacoesService.js";
 
 export class NegociacaoController {
+  @domInjector('#data')
   private inputData: HTMLInputElement;
+  @domInjector('#quantidade')
   private inputQuantidade: HTMLInputElement;
+  @domInjector('#valor')
   private inputValor: HTMLInputElement;
   private negociacoes = new Negociacoes();
   private negociacoesView = new NegociacoesView('#negociacoesView');
   private mensagemView = new MensagemView('#mensagemView');
+  private negociacoesService = new NegociacoesService();
 
   constructor() {
-    this.inputData = <HTMLInputElement>document.querySelector("#data");
-    this.inputQuantidade = document.querySelector("#quantidade") as HTMLInputElement; //Opção alternativa e recomendada!
-    this.inputValor = <HTMLInputElement>document.querySelector("#valor");
     this.negociacoesView.update(this.negociacoes);
   }
 
@@ -60,5 +63,24 @@ export class NegociacaoController {
   private atualizaView(): void {
     this.negociacoesView.update(this.negociacoes);
     this.mensagemView.update('Negociação adicionada com sucesso!');
+  }
+
+  public importarDados(): void {
+    this.negociacoesService.
+      obterNegociacoes()
+      .then(negociacoesdeHoje => {
+        return negociacoesdeHoje.filter(negociacaoDeHoje => {
+          return !this.negociacoes
+              .lista()
+              .some(negocociacao => negociacaoDeHoje
+                    .eIgual(negociacaoDeHoje))
+        })
+      })
+      .then(negociacoesDeHoje => {
+        for (let negociacao of negociacoesDeHoje) {
+          this.negociacoes.adiciona(negociacao)
+        }
+        this.negociacoesView.update(this.negociacoes);
+      })
   }
 }
